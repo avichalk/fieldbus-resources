@@ -2,55 +2,37 @@
 <html>
     <head>
         <script>
-            var HAS_RESULT_CLASS = "has_result"
-
-            /* ensure only allowed characters in equation */
-            function validateInput(expression) {
-                for (let i = 0; i < expression.length; i++) {
-                    if (! '0123456789.()+-*/ '.includes(expression.charAt(i))) {
-                        throw new Error("invalid input")
-                    }
-                }
-            }
 
             function registers_to_decimal(){
                 let reg1 = document.getElementById("register_1")
                 let reg2 = document.getElementById("register_2")
-                let resultElement = document.getElementById("register_result")
+                let result = document.getElementById("register_result")
                 try {
-                    let expression = eq.value
-                    validateInput(expression)
-                    let result = Function('"use strict";return (' + expression + ')')()
-                    resultElement.innerHTML = result
-                    resultElement.classList.add(HAS_RESULT_CLASS)
+                    /*shoutout to https://stackoverflow.com/questions/2003493/javascript-float-from-to-bits */
+                    var buffer = new ArrayBuffer(4);
+                    (new Uint16Array(buffer))[0] = reg2.value;
+                    (new Uint16Array(buffer))[1] = reg1.value;
+                    result.innerHTML = [ new Float32Array(buffer)[0] ];
                 } catch (error) {
-                    resultElement.innerHTML = "?"
-                    resultElement.classList.add(HAS_RESULT_CLASS)
+                    result.innerHTML = "?"
                 }
-                eq.focus()
             }
 
             function decimal_to_registers(){
-                let eq = document.getElementById("decimal_input")
-                let resultElement = document.getElementById("decimal_result")
-                resultElement.classList.remove(HAS_RESULT_CLASS)
+                let input = document.getElementById("decimal_input")
+                let result = document.getElementById("decimal_result")
                 try {
-                    let expression = eq.value
-                    validateInput(expression)
-                    let result = Function('"use strict";return (' + expression + ')')()
-                    resultElement.innerHTML = result
-                    resultElement.classList.add(HAS_RESULT_CLASS)
-                /* if fails, error out with "?" that links to the webpage */
+                    var buf = new ArrayBuffer(4);
+                    (new Float32Array(buf))[0] = parseFloat(input.value);
+                    result.innerHTML = [ (new Uint16Array(buf))[1], (new Uint16Array(buf))[0] ]
                 } catch (error) {
-                    resultElement.innerHTML = "?"
-                    resultElement.classList.add(HAS_RESULT_CLASS)
+                    result.innerHTML = "?"
                 }
-                eq.focus()
             }
 
             window.onload = function() {
-                registers_to_decimal()
                 decimal_to_registers()
+                registers_to_decimal()
             }
 
         </script>
