@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script>
+            var HAS_RESULT_CLASS = "has_result"
+
+            /* ensure only allowed characters in equation */
+            function validateInput(expression) {
+                for (let i = 0; i < expression.length; i++) {
+                    if (! '0123456789.()+-*/ '.includes(expression.charAt(i))) {
+                        throw new Error("invalid input")
+                    }
+                }
+            }
+
+            function registers_to_decimal(){
+                let reg1 = document.getElementById("register_1")
+                let reg2 = document.getElementById("register_2")
+                let resultElement = document.getElementById("register_result")
+                try {
+                    let expression = eq.value
+                    validateInput(expression)
+                    let result = Function('"use strict";return (' + expression + ')')()
+                    resultElement.innerHTML = result
+                    resultElement.classList.add(HAS_RESULT_CLASS)
+                } catch (error) {
+                    resultElement.innerHTML = "?"
+                    resultElement.classList.add(HAS_RESULT_CLASS)
+                }
+                eq.focus()
+            }
+
+            function decimal_to_registers(){
+                let eq = document.getElementById("decimal_input")
+                let resultElement = document.getElementById("decimal_result")
+                resultElement.classList.remove(HAS_RESULT_CLASS)
+                try {
+                    let expression = eq.value
+                    validateInput(expression)
+                    let result = Function('"use strict";return (' + expression + ')')()
+                    resultElement.innerHTML = result
+                    resultElement.classList.add(HAS_RESULT_CLASS)
+                /* if fails, error out with "?" that links to the webpage */
+                } catch (error) {
+                    resultElement.innerHTML = "?"
+                    resultElement.classList.add(HAS_RESULT_CLASS)
+                }
+                eq.focus()
+            }
+
+            window.onload = function() {
+                registers_to_decimal()
+                decimal_to_registers()
+            }
+
+        </script>
+        <style>
+            * {
+                font-family: 'Roboto Mono', monospace;
+                padding: 0;
+                margin: 0;
+            }
+            body {
+                background-color: black;
+                color: white;
+            }
+            textarea {
+                background-color: black;
+                color: white;
+            }
+
+
+        </style>
+    </head>
+    <body>
+        <div>
+            <h1>Decimal to Registers</h1>
+
+            <textarea id="decimal_input" style="outline: solid" onchange="decimal_to_registers()" onkeyup="decimal_to_registers()"></textarea>
+
+            <br>
+
+            <textarea id="decimal_result" style="outline: dashed red"></textarea>
+
+        </div>
+        <div>
+            <h1>Registers to Decimal</h1>
+
+            <textarea id="register_1" style="outline: solid" onchange="registers_to_decimal()" onkeyup="registers_to_decimal()"></textarea>
+
+            <textarea id="register_2" style="outline: solid" onchange="registers_to_decimal()" onkeyup="registers_to_decimal()"></textarea>
+
+            <br>
+
+            <textarea id="register_result" style="outline: dashed red"></textarea>
+
+        </div>
+    </body>
+</html>
